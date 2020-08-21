@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글 작성</title>
+</head>
+<body>
+    <form action="{% url 'create' %}" method="POST" enctype="multipart/form-data">
+        {%csrf_token%}
+        <h4>제목: </h4>
+        <input type="text" name="title">
+        <br>
+        <h4>본문: </h4>
+        <textarea cols=40 rows=10 name="content"></textarea>
+        <br>
+        <h4>이미지: </h4>
+        <input type="file" name="image"><br>
+        <input type="submit" value="등록하기">
+        <h4>위도 : </h4>
+        <input type="text" name="latitude">
+        <h4>경도 : </h4>
+        <input type="text" name="longtitude">
+        <h4>공개여부 : </h4>
+        <input type="radio" name="public" value="blank">
+    </form>
+</body>
+</html>

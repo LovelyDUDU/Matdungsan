@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block contents %}
+<div class="class_map">
+    <div class="main_container">
+    </div>
+    <div class="main-map">
+        <div id="map" style="width:500px;height:500px;"></div>
+        <!-- http://map.daum.net/?sName=서울시청&eName=서울고속터미널 -->
+        <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3dfad8c8cf0702820c5111f7c4c05eb6&libraries=services"></script>
+        <p><em>지도를 클릭해주세요!</em></p>
+        <br><br>
+
+    </div>
+</div>
+<div class="class_create">
+    <form action="{% url 'create' %}" method="POST" enctype="multipart/form-data">
+        {%csrf_token%}
+        <h4>제목: </h4>
+        <input type="text" name="title">
+        <br>
+        <h4>본문: </h4>
+        <textarea cols=40 rows=10 name="content"></textarea>
+        <br>
+        <h4>이미지: </h4>
+        <input type="file" name="image"><br>
+        <h4>위도 : </h4>
+        <input type="text" name="latitude" id="lat">
+        <h4>경도 : </h4>
+        <input type="text" name="longtitude" id="long">
+        <h4>공개여부 : </h4>
+        <input type="radio" name="public" value="True">
+        <input type="submit" value="등록하기">
+    </form>
+</div>
+{% for blog in blogs.all %}
+<h1> {{blog.title}} </h1>
+<p> {{blog.pub_date}} </p>
+<p> {{blog.body}} </p>
+<p> {{blog.latitude}} </p>
+<p> {{blog.longtitude}} </p>
+<p>{{blog.image}}</p>
+<br><br>
+<script>
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+        mapOption = {
+            center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+            level: 3 // 지도의 확대 레벨
+        };
+
+    var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+    // 지도를 클릭한 위치에 표출할 마커입니다
+    var marker = new kakao.maps.Marker({
+        // 지도 중심좌표에 마커를 생성합니다 
+        position: map.getCenter()
+    });
+    // 지도에 마커를 표시합니다
+    marker.setMap(map);
+
+    // 지도에 클릭 이벤트를 등록합니다
+    // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+    kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
+
+        // 클릭한 위도, 경도 정보를 가져옵니다 
+        var latlng = mouseEvent.latLng;
+
+        // 마커 위치를 클릭한 위치로 옮깁니다
+        marker.setPosition(latlng);
+        document.getElementById("lat").value= latlng.getLat();
+        document.getElementById("long").value=latlng.getLng();
+    });
+    
+</script>
+{% endfor %}
+{% endblock %}
