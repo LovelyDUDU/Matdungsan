@@ -6,6 +6,7 @@ from django.dispatch import receiver
 # Create your models here.
 # 게시물 작성할때 들어갈 내용 : 제목, 내용, 위도, 경도, 이미지, 공개유무
 class Blog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=20) # 제목
     pub_date = models.DateTimeField('date published') # 작성 시간
     content = models.TextField() # 내용

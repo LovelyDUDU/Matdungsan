@@ -23,7 +23,7 @@
             경도 : <input type="text" name="longtitude" id="long"><br>
             공개여부 :
             <input type="radio" name="public" value="True">
-            <input type="submit" value="등록하기">
+            <input type="submit" value="등록하기" id="posting">
         </form>
     </div>
 </div>
@@ -31,8 +31,9 @@
 <div>
     {% for blog in blogs.all %}
     <h5> 제목 : {{blog.title}} </h5>
+    작성자 : {{blog.user}} <br>
     작성시간 : {{blog.pub_date}} <br>
-    내용 :{{blog.content}} <br>
+    내용 : {{blog.content}} <br>
     위도 :  {{blog.latitude}} <br>
     경도 :  {{blog.longtitude}}  <br>
     {% if blog.image %}
@@ -43,13 +44,13 @@
     {% endfor %}
 </div>
 
-<div id="post_lat">
+<div id="post_lat" style="display : none">
     {% for blog in blogs.all %}
         {{blog.latitude}},
     {% endfor %}
 </div>
 
-<div id="post_lng">
+<div id="post_lng" style="display : none">
     {% for blog in blogs.all %}
         {{blog.longtitude}},
     {% endfor %}
@@ -95,7 +96,5 @@
         postPosition.push(marker);
         
     }
-
-    
 </script>
 {% endblock %}

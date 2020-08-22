@@ -7,6 +7,7 @@ import blogapp.views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('blogapp/', include('blogapp.urls')),
+    path('accountapp/', include('accountapp.urls')),
     path('', blogapp.views.index, name='index'), #메인화면
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

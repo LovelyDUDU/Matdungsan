@@ -8,24 +8,27 @@ def index(request):
 
 
 def create(request):
-    if request.method == "GET":
-        return render(request, 'index.html')
+    if request.user.is_authenticated:
+        if request.method == "GET":
+            return render(request, 'index.html')
     
-    elif request.method =="POST":
-        blog = Blog()
-        blog.user = request.user
-        blog.title = request.POST['title']
-        blog.content = request.POST['content']
-        blog.pub_date = timezone.datetime.now()
-        try:
-            blog.image=request.FILES['image']
-        except:
-            pass
-        blog.latitude = request.POST['latitude']
-        blog.longtitude = request.POST['longtitude']
-        public = request.POST.get('public',False)  
-        if public == "1":
-            blog.public = True
-        blog.save()
+        elif request.method =="POST":
+            blog = Blog()
+            blog.user = request.user
+            blog.title = request.POST['title']
+            blog.content = request.POST['content']
+            blog.pub_date = timezone.datetime.now()
+            try:
+                blog.image=request.FILES['image']
+            except:
+                pass
+            blog.latitude = request.POST['latitude']
+            blog.longtitude = request.POST['longtitude']
+            public = request.POST.get('public',False)  
+            if public == "1":
+                blog.public = True
+            blog.save()
+            return redirect(index)
+    else:
         return redirect(index)
     
