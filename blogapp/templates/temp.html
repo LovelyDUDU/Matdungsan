@@ -73,8 +73,6 @@
     });
 
 
-
-
     var list_lat = document.getElementById("post_lat").innerText.split(',');
     var list_lng = document.getElementById("post_lng").innerText.split(',');
     console.log(list_lat)
@@ -83,7 +81,7 @@
     for(var idx=0; idx<list_lat.length; idx++){
     	var data_lat = list_lat[idx];
     	var data_lng = list_lng[idx];
-        addMarker(new kakao.maps.LatLng(data_lat, data_lng));
+    	postPosition.push(new kakao.maps.LatLng(data_lat, data_lng));
     }
 
     function addMarker(position) {
@@ -91,8 +89,7 @@
             position: position
         });
         marker.setMap(map);
-        postPosition.push(marker);
+        markers.push(marker);
     }
-    
 </script>
 {% endblock %}
