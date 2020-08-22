@@ -3,7 +3,7 @@ from django.utils import timezone
 from .models import Blog
 
 def index(request):
-    blogs = Blog.objects
+    blogs = Blog.objects.all()
     return render(request, 'index.html', {'blogs': blogs})
 
 
