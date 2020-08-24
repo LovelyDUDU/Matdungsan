@@ -19,11 +19,11 @@
             본문: <textarea cols=20 rows=1 name="content"></textarea>
             <br>
             이미지: <input type="file" name="image"><br>
-            위도 : <input type="text" name="latitude" id="lat"><br>
-            경도 : <input type="text" name="longtitude" id="long"><br>
+            위도 : <input type="text" name="latitude" id="lat" readonly><br>
+            경도 : <input type="text" name="longtitude" id="long" readonly><br>
             공개여부 :
             <input type="radio" name="public" value="True">
-            <input type="submit" value="등록하기">
+            <input type="submit" value="등록하기" id="posting">
         </form>
     </div>
 </div>
@@ -31,22 +31,26 @@
 <div>
     {% for blog in blogs.all %}
     <h5> 제목 : {{blog.title}} </h5>
+    작성자 : {{blog.user}} <br>
     작성시간 : {{blog.pub_date}} <br>
-    내용 :{{blog.content}} <br>
+    내용 : {{blog.content}} <br>
     위도 :  {{blog.latitude}} <br>
     경도 :  {{blog.longtitude}}  <br>
-    이미지 : {{blog.image}}
+    {% if blog.image %}
+    <p> <img src="{{ blog.image.url }}" style="width:50px; height:50px;"> </p>
+    {% else %}
+    {% endif %}
     <hr>
     {% endfor %}
 </div>
 
-<div id="post_lat">
+<div id="post_lat" style="display : none">
     {% for blog in blogs.all %}
         {{blog.latitude}},
     {% endfor %}
 </div>
 
-<div id="post_lng">
+<div id="post_lng" style="display : none">
     {% for blog in blogs.all %}
         {{blog.longtitude}},
     {% endfor %}
@@ -55,7 +59,7 @@
 <script>
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
         mapOption = {
-            center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+            center: new kakao.maps.LatLng(35.871016, 128.594038), // 지도의 중심좌표
             level: 3 // 지도의 확대 레벨
         };
 
@@ -81,7 +85,7 @@
     for(var idx=0; idx<list_lat.length; idx++){
     	var data_lat = list_lat[idx];
     	var data_lng = list_lng[idx];
-    	postPosition.push(new kakao.maps.LatLng(data_lat, data_lng));
+        addMarker(new kakao.maps.LatLng(data_lat, data_lng));
     }
 
     function addMarker(position) {
@@ -89,7 +93,8 @@
             position: position
         });
         marker.setMap(map);
-        markers.push(marker);
+        postPosition.push(marker);
+        
     }
 </script>
 {% endblock %}
