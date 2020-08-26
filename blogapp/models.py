@@ -7,13 +7,14 @@ from django.dispatch import receiver
 # 게시물 작성할때 들어갈 내용 : 제목, 내용, 위도, 경도, 이미지, 공개유무
 class Blog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=20) # 제목
+    title = models.CharField(max_length=20) # 식당이름
+    rating = models.FloatField() # 평점
     pub_date = models.DateTimeField('date published') # 작성 시간
-    content = models.TextField() # 내용
+    content = models.TextField() # 한줄평
     image = models.ImageField(upload_to='images/', blank=True) # 사진
     latitude = models.FloatField() # 위도
     longtitude = models.FloatField() # 경도
-    public = models.BooleanField(default=False) #공개 유무
+    # public = models.BooleanField(default=False) #공개 유무
     
     def __str__(self):
         return self.title

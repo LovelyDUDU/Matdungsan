@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.utils import timezone
 from .models import Blog
+import ctypes
 
 def index(request):
     blogs = Blog.objects.all()
@@ -16,17 +17,15 @@ def create(request):
             blog = Blog()
             blog.user = request.user
             blog.title = request.POST['title']
+            blog.rating = request.POST['rating']
             blog.content = request.POST['content']
             blog.pub_date = timezone.datetime.now()
             try:
                 blog.image=request.FILES['image']
             except:
-                pass
+                return ctypes.windll.user32.MessageBoxW(None, "에러", "사진을 첨부하세요", 5)
             blog.latitude = request.POST['latitude']
             blog.longtitude = request.POST['longtitude']
-            public = request.POST.get('public',False)  
-            if public == "1":
-                blog.public = True
             blog.save()
             return redirect(index)
     else:
