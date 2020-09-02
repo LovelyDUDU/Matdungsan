@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.utils import timezone
-from .models import Blog
+from .models import Blog, Profile
+from django.contrib.auth.models import User
 import ctypes
 
 def index(request):
@@ -30,4 +31,20 @@ def create(request):
             return redirect(index)
     else:
         return redirect(index)
-    
+
+
+def profile(request, user):
+    blogs = Blog.objects.filter(user=request.user)
+    profile = Profile.objects.get(user = request.user)
+    context={
+        "profile":profile,
+        "blogs":blogs
+        }   
+    return render(request, 'profile.html', context)
+
+def detail(request, post_id):
+    post = Blog.objects.get(id=post_id)
+    context = {
+        "post":post
+    }
+    return render(request,'detail.html',context)

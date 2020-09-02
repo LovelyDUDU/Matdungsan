@@ -1,39 +1,11 @@
 {% extends 'base.html' %}
 {% block contents %}
-<div>
-    <div class="class_map">
-        <div class="main_container"></div>
-        <div class="main-map">
-            <div id="map" style="width:500px;height:500px;"></div>
-            <!-- http://map.daum.net/?sName=서울시청&eName=서울고속터미널 -->
-            <script type="text/javascript"
-                src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3dfad8c8cf0702820c5111f7c4c05eb6&libraries=services"></script>
-        </div>
-    </div>
-    <div class="class_create">
-        <form action="{% url 'create' %}" method="POST" enctype="multipart/form-data">
-            {%csrf_token%}
-            제목 : <input type="text" name="title">
-            <br>
-            평점 : 
-            <select name="rating">
-                <option value="5" selected="selected">★★★★★</option>
-                <option value="4">★★★★</option>
-                <option value="3" >★★★</option>
-                <option value="2">★★</option>
-                <option value="1">★</option>
-            </select>
-            <br>
-            한줄평 : <textarea cols=20 rows=1 name="content"></textarea>
-            <br>
-            이미지 : <input type="file" name="image"><br>
-            위도 : <input type="text" name="latitude" id="lat" readonly><br>
-            경도 : <input type="text" name="longtitude" id="long" readonly><br>
-            <input type="submit" value="등록하기" id="posting">
-        </form>
-    </div>
+
+<div id="post_id" style="display : none">
+    {% for blog in blogs.all %}
+    {{blog.id}},
+    {% endfor %}
 </div>
-<hr>
 
 <div id="post_lat" style="display : none">
     {% for blog in blogs.all %}
@@ -70,29 +42,63 @@
     {{blog.image.url}},
     {% endfor %}
 </div>
+<div>
+    <div class="card top_content">
+        <div class="card-body">
+            <div class="row">
+                <span class="col">
+                    <h4 class="card-title">
+                        <img src="http://placehold.it/320x100" alt="" class="profile-image">
+                    </h4>
+                </span>
+                <span class="col">
+                    <div class="nickname">{{profile.nickname}}({{profile.user}})</div>
+                    <span class="name">{{profile.name}} / {{profile.gender}}</span>
+                    <br>
+                    <span class="old">출생 : {{profile.birth}}</span><br>
+                    {%if request.user == profile.user or request.user.is_staff %}
+                    <!-- 댓글쓴이와 로그인한 유저가 같을 때 보이는 화면 -->
+                    <form action="">
+                        <button type="submit" class="btn btn-light" value="">프로필 편집</button>
+                    </form>
+                    {%endif%}
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="left_content">
+        <div class="class_map">
+            <div class="main_container"></div>
+            <div class="main-map">
+                <div id="map" style="width:500px;height:500px;"></div>
+                <!-- http://map.daum.net/?sName=서울시청&eName=서울고속터미널 -->
+                <script type="text/javascript"
+                    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3dfad8c8cf0702820c5111f7c4c05eb6&libraries=services"></script>
+            </div>
+        </div>
+    </div>
+    <div class="right_content">
+        {% for blog in blogs.all %}
+        <div id="post_image">
+            <img src="{{blog.image.url}}" alt="" style="width: 200px; height: 200px;">
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
 
 <script>
 
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
         mapOption = {
-            center: new kakao.maps.LatLng(35.871016, 128.594038), // 지도의 중심좌표
-            level: 3 // 지도의 확대 레벨
+            center: new kakao.maps.LatLng(35.871016, 127.7), // 지도의 중심좌표
+            level: 13 // 지도의 확대 레벨
         };
 
     var map = new kakao.maps.Map(mapContainer, mapOption);
-    var marker = new kakao.maps.Marker({
-        map: map,
-        position: map.getCenter()
-    });
-    marker.setMap(map);
-    kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
-        var latlng = mouseEvent.latLng;
-        marker.setPosition(latlng);
-        document.getElementById("lat").value = latlng.getLat();
-        document.getElementById("long").value = latlng.getLng();
-    });
 
-
+    var list_id = document.getElementById("post_id").innerText.split(',');
     var list_lat = document.getElementById("post_lat").innerText.split(',');
     var list_lng = document.getElementById("post_lng").innerText.split(',');
     var list_title = document.getElementById("post_title").innerText.split(',');
@@ -102,22 +108,23 @@
 
     var postPosition = [];
     for (var idx = 0; idx < list_lat.length; idx++) {
+        var data_id = list_id[idx];
         var data_lat = list_lat[idx];
         var data_lng = list_lng[idx];
         var data_title = list_title[idx];
         var data_content = list_content[idx];
         var data_rating = list_rating[idx];
         var data_image = list_image[idx];
-        addMarker(new kakao.maps.LatLng(data_lat, data_lng), data_title, data_content, data_rating, data_image);
+        addMarker(new kakao.maps.LatLng(data_lat, data_lng), data_id, data_title, data_content, data_rating, data_image);
 
     }
 
-    function addMarker(position, d_title, d_content, d_rating, d_image) {
+    function addMarker(position, d_id, d_title, d_content, d_rating, d_image) {
         var marker = new kakao.maps.Marker({
             map: map,
-            position: position
+            position: position,
+            clickable : true
         });
-        var detail;
 
 
 
@@ -153,6 +160,12 @@
         kakao.maps.event.addListener(marker, 'mouseout', function () {
             overlay.setMap(null)
         });
+        kakao.maps.event.addListener(marker, 'click', function() {
+            var url = "{% url 'detail' 1 %}";
+            var id = Number(d_id);
+            console.log(d_id);
+            location.href= url.replace('1', id);
+      });
     }
 </script>
-{% endblock %}
+{%endblock%}

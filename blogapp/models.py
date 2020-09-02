@@ -21,3 +21,27 @@ class Blog(models.Model):
         
     def summary(self):
         return self.content[:30]
+
+
+class Profile(models.Model): 
+    user = models.OneToOneField(User, on_delete=models.CASCADE) #유저랑 1:1관계
+    name=models.CharField(max_length=10) #이름
+    nickname=models.CharField(max_length=10) #닉네임
+    gender = models.CharField(max_length=5) #성별
+    birth = models.CharField(max_length=10) #생년월일
+    image = models.ImageField(upload_to='images/',null=True, blank=True) #프로필 사진첨부
+
+    def __str__(self):
+        n_user=str(self.user)
+        return n_user
+ 
+
+
+@receiver(post_save, sender=User) #자동으로 생성
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
