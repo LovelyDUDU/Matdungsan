@@ -1,158 +1,252 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block contents %}
-<div>
-    <div class="class_map">
-        <div class="main_container"></div>
-        <div class="main-map">
-            <div id="map" style="width:500px;height:500px;"></div>
-            <!-- http://map.daum.net/?sName=서울시청&eName=서울고속터미널 -->
-            <script type="text/javascript"
-                src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3dfad8c8cf0702820c5111f7c4c05eb6&libraries=services"></script>
+<!-- Masthead-->
+<header class="masthead bg-primary text-white text-center">
+    <div class="container d-flex align-items-center flex-column">
+        <!-- Masthead Avatar Image-->
+        <img class="masthead-avatar mb-5" src="{% static 'images/index_logo1.jpg' %}" alt="" />
+        <!-- 검색창 -->
+        <fieldset class="field-container">
+            <input type="text" placeholder="Search..." class="field" />
+            <div class="icons-container">
+                <div class="icon-search"></div>
+                <div class="icon-close">
+                    <div class="x-up"></div>
+                    <div class="x-down"></div>
+                </div>
+            </div>
+        </fieldset>
+        <br>
+        <!-- Masthead Heading-->
+        <h1 class="masthead-heading text-uppercase mb-0">일단 올라보세요!</h1>
+        <!-- Icon Divider-->
+        <!-- Masthead Subheading-->
+        <p class="masthead-subheading font-weight-light mb-0">산행 경로, 사진, 근처 맛집 공유, 등산의 거의 모든 것을 위한 커뮤니티</p>
+    </div>
+</header>
+<!-- Portfolio Section-->
+<section class="page-section portfolio" id="portfolio">
+    <div class="container">
+        <!-- Portfolio Section Heading-->
+        <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">요즘 뜨는 핫산</h2>
+        <!-- Icon Divider-->
+        <div class="divider-custom">
+        </div>
+        <!-- Portfolio Grid Items-->
+        <div class="row">
+            <!-- Portfolio Item 1-->
+            <div class="col-md-6 col-lg-4 mb-5">
+                <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal1">
+                    <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                        <!-- 스크롤 올리면 초록색 효과-->
+                        <div class="portfolio-item-caption-content text-center text-white"><i
+                                class="fas fa-plus fa-3x"></i></div> <!-- 스크롤 올리면 +표시-->
+                    </div>
+                    <img class="img-fluid" src="{% static 'images/portfolio/cabin.png' %}" alt="" /> <!-- 이미지 경로-->
+                </div>
+            </div>
+            <!-- Portfolio Item 2-->
+            <div class="col-md-6 col-lg-4 mb-5">
+                <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal2">
+                    <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                        <div class="portfolio-item-caption-content text-center text-white"><i
+                                class="fas fa-plus fa-3x"></i></div>
+                    </div>
+                    <img class="img-fluid" src="{% static 'images/portfolio/cake.png' %}" alt="" />
+                </div>
+            </div>
+            <!-- Portfolio Item 3-->
+            <div class="col-md-6 col-lg-4 mb-5">
+                <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal3">
+                    <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                        <div class="portfolio-item-caption-content text-center text-white"><i
+                                class="fas fa-plus fa-3x"></i></div>
+                    </div>
+                    <img class="img-fluid" src="{% static 'images/portfolio/circus.png' %}" alt="" />
+                </div>
+            </div>
+            <!-- Portfolio Item 4-->
+            <div class="col-md-6 col-lg-4 mb-5 mb-lg-0">
+                <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal4">
+                    <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                        <div class="portfolio-item-caption-content text-center text-white"><i
+                                class="fas fa-plus fa-3x"></i></div>
+                    </div>
+                    <img class="img-fluid" src="{% static 'images/portfolio/game.png' %}" alt="" />
+                </div>
+            </div>
+            <!-- Portfolio Item 5-->
+            <div class="col-md-6 col-lg-4 mb-5 mb-md-0">
+                <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal5">
+                    <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                        <div class="portfolio-item-caption-content text-center text-white"><i
+                                class="fas fa-plus fa-3x"></i></div>
+                    </div>
+                    <img class="img-fluid" src="{% static 'images/portfolio/safe.png' %}" alt="" />
+                </div>
+            </div>
+
         </div>
     </div>
-    <div class="class_create">
-        <form action="{% url 'create' %}" method="POST" enctype="multipart/form-data">
-            {%csrf_token%}
-            제목 : <input type="text" name="title">
-            <br>
-            평점 : 
-            <select name="rating">
-                <option value="5" selected="selected">★★★★★</option>
-                <option value="4">★★★★</option>
-                <option value="3" >★★★</option>
-                <option value="2">★★</option>
-                <option value="1">★</option>
-            </select>
-            <br>
-            한줄평 : <textarea cols=20 rows=1 name="content"></textarea>
-            <br>
-            이미지 : <input type="file" name="image"><br>
-            위도 : <input type="text" name="latitude" id="lat" readonly><br>
-            경도 : <input type="text" name="longtitude" id="long" readonly><br>
-            <input type="submit" value="등록하기" id="posting">
-        </form>
+</section>
+
+<!-- Portfolio Modal 3-->
+<div class="portfolio-modal modal fade" id="portfolioModal3" tabindex="-1" role="dialog"
+    aria-labelledby="portfolioModal3Label" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fas fa-times"></i></span>
+            </button>
+            <div class="modal-body text-center">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <!-- Portfolio Modal - Title-->
+                            <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0"
+                                id="portfolioModal3Label">Circus Tent</h2>
+                            <!-- Icon Divider-->
+                            <div class="divider-custom">
+                                <div class="divider-custom-line"></div>
+                                <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+                                <div class="divider-custom-line"></div>
+                            </div>
+                            <!-- Portfolio Modal - Image-->
+                            <img class="img-fluid rounded mb-5" src="{% static 'images/portfolio/circus.png' %}"
+                                alt="" />
+                            <!-- Portfolio Modal - Text-->
+                            <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque
+                                assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit
+                                asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+                            <button class="btn btn-primary" data-dismiss="modal">
+                                <i class="fas fa-times fa-fw"></i>
+                                Close Window
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<hr>
-
-<div id="post_lat" style="display : none">
-    {% for blog in blogs.all %}
-    {{blog.latitude}},
-    {% endfor %}
+<!-- Portfolio Modal 4-->
+<div class="portfolio-modal modal fade" id="portfolioModal4" tabindex="-1" role="dialog"
+    aria-labelledby="portfolioModal4Label" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fas fa-times"></i></span>
+            </button>
+            <div class="modal-body text-center">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <!-- Portfolio Modal - Title-->
+                            <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0"
+                                id="portfolioModal4Label">Controller</h2>
+                            <!-- Icon Divider-->
+                            <div class="divider-custom">
+                                <div class="divider-custom-line"></div>
+                                <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+                                <div class="divider-custom-line"></div>
+                            </div>
+                            <!-- Portfolio Modal - Image-->
+                            <img class="img-fluid rounded mb-5" src="{% static 'images/portfolio/game.png' %}" alt="" />
+                            <!-- Portfolio Modal - Text-->
+                            <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque
+                                assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit
+                                asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+                            <button class="btn btn-primary" data-dismiss="modal">
+                                <i class="fas fa-times fa-fw"></i>
+                                Close Window
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div id="post_lng" style="display : none">
-    {% for blog in blogs.all %}
-    {{blog.longtitude}},
-    {% endfor %}
+<!-- Portfolio Modal 5-->
+<div class="portfolio-modal modal fade" id="portfolioModal5" tabindex="-1" role="dialog"
+    aria-labelledby="portfolioModal5Label" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fas fa-times"></i></span>
+            </button>
+            <div class="modal-body text-center">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <!-- Portfolio Modal - Title-->
+                            <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0"
+                                id="portfolioModal5Label">Locked Safe</h2>
+                            <!-- Icon Divider-->
+                            <div class="divider-custom">
+                                <div class="divider-custom-line"></div>
+                                <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+                                <div class="divider-custom-line"></div>
+                            </div>
+                            <!-- Portfolio Modal - Image-->
+                            <img class="img-fluid rounded mb-5" src="{% static 'images/portfolio/safe.png' %}" alt="" />
+                            <!-- Portfolio Modal - Text-->
+                            <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque
+                                assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit
+                                asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+                            <button class="btn btn-primary" data-dismiss="modal">
+                                <i class="fas fa-times fa-fw"></i>
+                                Close Window
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div id="post_title" style="display : none">
-    {% for blog in blogs.all %}
-    {{blog.title}},
-    {% endfor %}
+<!-- Portfolio Modal 6-->
+<div class="portfolio-modal modal fade" id="portfolioModal6" tabindex="-1" role="dialog"
+    aria-labelledby="portfolioModal6Label" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fas fa-times"></i></span>
+            </button>
+            <div class="modal-body text-center">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <!-- Portfolio Modal - Title-->
+                            <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0"
+                                id="portfolioModal6Label">Submarine</h2>
+                            <!-- Icon Divider-->
+                            <div class="divider-custom">
+                                <div class="divider-custom-line"></div>
+                                <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+                                <div class="divider-custom-line"></div>
+                            </div>
+                            <!-- Portfolio Modal - Image-->
+                            <img class="img-fluid rounded mb-5" src="{% static 'images/portfolio/submarine.png' %}"
+                                alt="" />
+                            <!-- Portfolio Modal - Text-->
+                            <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque
+                                assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit
+                                asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+                            <button class="btn btn-primary" data-dismiss="modal">
+                                <i class="fas fa-times fa-fw"></i>
+                                Close Window
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div id="post_rating" style="display : none">
-    {% for blog in blogs.all %}
-    {{blog.rating}},
-    {% endfor %}
-</div>
-
-<div id="post_content" style="display : none">
-    {% for blog in blogs.all %}
-    {{blog.content}},
-    {% endfor %}
-</div>
-
-<div id="post_image" style="display : none">
-    {% for blog in blogs.all %}
-    {{blog.image.url}},
-    {% endfor %}
-</div>
-
-<script>
-
-    var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-        mapOption = {
-            center: new kakao.maps.LatLng(35.871016, 128.594038), // 지도의 중심좌표
-            level: 3 // 지도의 확대 레벨
-        };
-
-    var map = new kakao.maps.Map(mapContainer, mapOption);
-    var marker = new kakao.maps.Marker({
-        map: map,
-        position: map.getCenter()
-    });
-    marker.setMap(map);
-    kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
-        var latlng = mouseEvent.latLng;
-        marker.setPosition(latlng);
-        document.getElementById("lat").value = latlng.getLat();
-        document.getElementById("long").value = latlng.getLng();
-    });
-
-
-    var list_lat = document.getElementById("post_lat").innerText.split(',');
-    var list_lng = document.getElementById("post_lng").innerText.split(',');
-    var list_title = document.getElementById("post_title").innerText.split(',');
-    var list_content = document.getElementById("post_content").innerText.split(',');
-    var list_rating = document.getElementById("post_rating").innerText.split(',');
-    var list_image = document.getElementById("post_image").innerText.split(',');
-
-    var postPosition = [];
-    for (var idx = 0; idx < list_lat.length; idx++) {
-        var data_lat = list_lat[idx];
-        var data_lng = list_lng[idx];
-        var data_title = list_title[idx];
-        var data_content = list_content[idx];
-        var data_rating = list_rating[idx];
-        var data_image = list_image[idx];
-        addMarker(new kakao.maps.LatLng(data_lat, data_lng), data_title, data_content, data_rating, data_image);
-
-    }
-
-    function addMarker(position, d_title, d_content, d_rating, d_image) {
-        var marker = new kakao.maps.Marker({
-            map: map,
-            position: position
-        });
-        var detail;
-
-
-
-        var content = '<div class="wrap">' +
-            '       <div class="info">' +
-            '           <div class="title">' +
-            d_title +
-            '           </div>' +
-            '           <div class="body">' +
-            '               <div class="img">' +
-            '                   <img src="' + d_image + '" width="73" height="70">' +
-            '               </div>' +
-            '           <div class="desc">' +
-            '               <div class="">평점' + d_rating + '</div>' +
-            '               <div class="">위치' + position + '</div>' +
-            '               <div class="">한줄평' + d_content + '</div>' +
-            '           </div>' +
-            '       </div>' +
-            '   </div>' +
-            '</div>';
-        var overlay = new kakao.maps.CustomOverlay({
-            content: content,
-            map: map,
-            position: marker.getPosition()
-        });
-
-        overlay.setMap(null);
-
-        kakao.maps.event.addListener(marker, 'mouseover', function () {
-            overlay.setMap(map)
-        });
-
-        kakao.maps.event.addListener(marker, 'mouseout', function () {
-            overlay.setMap(null)
-        });
-    }
-</script>
-{% endblock %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}?after">
+    <script type="text/javascript" src="{% static 'js/scripts.js' %}?after"></script>
+    <script type="text/javascript" src="{% static 'js/contact_me.js' %}?after"></script>
+    <script type="text/javascript" src="{% static 'js/jqBootstrapValidation.js' %}?after"></script>
+{%endblock%}

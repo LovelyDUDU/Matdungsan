@@ -12,7 +12,8 @@ def index(request):
 def create(request):
     if request.user.is_authenticated:
         if request.method == "GET":
-            return render(request, 'index.html')
+            blogs = Blog.objects.all()
+            return render(request, 'create.html', {'blogs': blogs})
     
         elif request.method =="POST":
             blog = Blog()
@@ -28,9 +29,9 @@ def create(request):
             blog.latitude = request.POST['latitude']
             blog.longtitude = request.POST['longtitude']
             blog.save()
-            return redirect(index)
+            return redirect(create)
     else:
-        return redirect(index)
+        return redirect(create)
 
 
 def profile(request, user):
