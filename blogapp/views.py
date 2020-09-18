@@ -64,7 +64,7 @@ def update_profile(request, user):
         profile.gender = request.POST['gender']
         profile.birth=request.POST['birth']
         try:
-            profile.imgae = request.FILES['image']
+            profile.image = request.FILES['image']
         except:
             pass
         profile.save()
