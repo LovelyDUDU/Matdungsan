@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.utils import timezone
 from .models import Blog, Profile
 from django.contrib.auth.models import User
@@ -49,3 +49,23 @@ def detail(request, post_id):
         "post":post
     }
     return render(request,'detail.html',context)
+
+def update_profile(request, user):
+    if request.method=="GET":
+        profile = Profile.objects.get(user = request.user)
+        context={
+            "profile" : profile
+        }
+        return render(request, "update_profile.html", context)
+    elif request.method=="POST":
+        profile = Profile.objects.get(user=request.user)
+        profile.nickname=request.POST['nickname']
+        profile.name=request.POST['name']
+        profile.gender = request.POST['gender']
+        profile.birth=request.POST['birth']
+        try:
+            profile.imgae = request.FILES['image']
+        except:
+            pass
+        profile.save()
+        return redirect('/' + 'blogapp/profile/' + user)

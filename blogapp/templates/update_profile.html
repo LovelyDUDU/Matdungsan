@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block contents %}
+<div style="margin-top:100px;"></div>
+<h1>프로필 수정</h1>
+ 
+<form method="POST" action="{% url 'update_profile' user.username}" enctype="multipart/form-data">
+{% csrf_token %}
+    별명:
+    <input name="nickname" type="text" value="{{profile.nickname}}">
+    이름:
+    <input name="name" type="text" value="{{profile.name}}">
+    성별:
+    <select name="gender" id="gender" >
+        <option value="남성">남성</option>
+        <option value="여성">여성</option>
+    </select>
+    생년월일:
+    <input name="birth" type="text" value="{{profile.birth}}" placeholder="YYYY-MM-DD">
+    프로필 사진 :
+    <input type="file" name="image" value="{{profile.image}}"><br>
+    <input type="submit" value="프로필 수정">
+</form>
+<script>
+    $("#gender").val("{{profile.gender}}");
+</script>
+{% endblock %}

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block contents %}
-
+<div style="margin-top:100px;"></div>
 <div id="post_id" style="display : none">
     {% for blog in blogs.all %}
     {{blog.id}},
@@ -48,7 +48,12 @@
             <div class="row">
                 <span class="col">
                     <h4 class="card-title">
+                        {% if profile.image %}
+                        <img src="{{profile.image.url}}" alt="" width="320" height="100" class="profile-image">
+                        {% else %}
                         <img src="http://placehold.it/320x100" alt="" class="profile-image">
+                        {% endif %}
+                        
                     </h4>
                 </span>
                 <span class="col">
@@ -58,7 +63,7 @@
                     <span class="old">출생 : {{profile.birth}}</span><br>
                     {%if request.user == profile.user or request.user.is_staff %}
                     <!-- 댓글쓴이와 로그인한 유저가 같을 때 보이는 화면 -->
-                    <form action="">
+                    <form action="{% url 'update_profile' user.username %}">
                         <button type="submit" class="btn btn-light" value="">프로필 편집</button>
                     </form>
                     {%endif%}
