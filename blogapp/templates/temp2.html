@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block contents %}
+<div>
+    <div class="class_map">
+        <div class="main_container"></div>
+        <div class="main-map">
+            <div id="map" style="width:200px;height:200px;"></div>
+            <!-- http://map.daum.net/?sName=서울시청&eName=서울고속터미널 -->
+            <script type="text/javascript"
+                src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3dfad8c8cf0702820c5111f7c4c05eb6&libraries=services"></script>
+            <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8cd0dfeeb3fbf68a48f66ec535c3a3a7"></script>
+            </div>
+    </div>
+    <div class="class_create">
+        <form action="{% url 'create' %}" method="POST" enctype="multipart/form-data">
+            {%csrf_token%}
+            제목:
+            <input type="text" name="title">
+            <br>
+            본문: <textarea cols=20 rows=1 name="content"></textarea>
+            <br>
+            이미지: <input type="file" name="image"><br>
+            위도 : <input type="text" name="latitude" id="lat" readonly><br>
+            경도 : <input type="text" name="longtitude" id="long" readonly><br>
+            공개여부 :
+            <input type="radio" name="public" value="True">
+            <input type="submit" value="등록하기" id="posting">
+        </form>
+    </div>
+</div>
+<hr>
+<div>
+    {% for blog in blogs.all %}
+    <h5> 제목 : {{blog.title}} </h5>
+    작성자 : {{blog.user}} <br>
+    작성시간 : {{blog.pub_date}} <br>
+    내용 : {{blog.content}} <br>
+    위도 :  {{blog.latitude}} <br>
+    경도 :  {{blog.longtitude}}  <br>
+    {% if blog.image %}
+    <p> <img src="{{ blog.image.url }}" style="width:50px; height:50px;"> </p>
+    {% else %}
+    {% endif %}
+    <hr>
+    {% endfor %}
+</div>
+
+<div id="post_lat" style="display : none">
+    {% for blog in blogs.all %}
+        {{blog.latitude}},
+    {% endfor %}
+</div>
+
+<div id="post_lng" style="display : none">
+    {% for blog in blogs.all %}
+        {{blog.longtitude}},
+    {% endfor %}
+</div>
+
+<div id="post_title" style="display : none">
+    {% for blog in blogs.all %}
+        {{blog.title}},
+    {% endfor %}
+</div>
+
+<script>
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+        mapOption = {
+            center: new kakao.maps.LatLng(35.871016, 128.594038), // 지도의 중심좌표
+            level: 10 // 지도의 확대 레벨
+        };
+
+    var map = new kakao.maps.Map(mapContainer, mapOption);
+    var marker = new kakao.maps.Marker({
+        position: map.getCenter()
+    });
+    marker.setMap(map);
+
+    kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
+        var latlng = mouseEvent.latLng;
+        marker.setPosition(latlng);
+        document.getElementById("lat").value = latlng.getLat();
+        document.getElementById("long").value = latlng.getLng();
+    });
+
+
+    var list_lat = document.getElementById("post_lat").innerText.split(',');
+    var list_lng = document.getElementById("post_lng").innerText.split(',');
+    var list_title = document.getElementById("post_title").innerText.split(',');
+    
+    var postPosition = [];
+    for(var idx=0; idx<list_lat.length; idx++){
+    	var data_lat = list_lat[idx];
+        var data_lng = list_lng[idx];
+        var data_title = list_title[idx];
+        addMarker(new kakao.maps.LatLng(data_lat, data_lng));
+        addWindow(new kakao.maps.LatLng(data_lat, data_lng));
+    }
+
+    function addMarker(position) {
+        console.log('처음 position : ' + position);
+        var iwContent ='<div style="padding:5px;">Hi</div>';
+        var marker = new kakao.maps.Marker({
+            position: position
+        });
+        marker.setMap(map);
+        var iwContent ='<div style="padding:5px;">Hi</div>';
+        var infowindow = new kakao.maps.InfoWindow({
+            position : position,
+            content : iwContent
+        });
+        infowindow.open(map, marker);
+        marker.setMap(map);
+    }
+
+    function addWindow(position){
+        var iwContent ='<div style="padding:5px;">Hi</div>';
+        var infowindow = new kakao.maps.InfoWindow({
+            position : position,
+            content : iwContent
+        });
+        infowindow.open(map, marker);
+    }
+</script>
+{% endblock %}
