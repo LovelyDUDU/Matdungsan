@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% block contents %}
+<div style="margin-top:100px;"></div>
+<div id="post_id" style="display : none">
+    {% for blog in blogs.all %}
+    {{blog.id}},
+    {% endfor %}
+</div>
+
+<div id="post_lat" style="display : none">
+    {% for blog in blogs.all %}
+    {{blog.latitude}},
+    {% endfor %}
+</div>
+
+<div id="post_lng" style="display : none">
+    {% for blog in blogs.all %}
+    {{blog.longtitude}},
+    {% endfor %}
+</div>
+
+<div id="post_title" style="display : none">
+    {% for blog in blogs.all %}
+    {{blog.title}},
+    {% endfor %}
+</div>
+
+<div id="post_rating" style="display : none">
+    {% for blog in blogs.all %}
+    {{blog.rating}},
+    {% endfor %}
+</div>
+
+<div id="post_content" style="display : none">
+    {% for blog in blogs.all %}
+    {{blog.content}},
+    {% endfor %}
+</div>
+
+<div id="post_image" style="display : none">
+    {% for blog in blogs.all %}
+    {{blog.image.url}},
+    {% endfor %}
+</div>
+<div>
+    <div class="card top_content">
+        <div class="card-body">
+            <div class="row">
+                <span class="col">
+                    <h4 class="card-title">
+                        {% if profile.image %}
+                        <img src="{{profile.image.url}}" alt="" width="320" height="100" class="profile-image">
+                        {% else %}
+                        <img src="http://placehold.it/320x100" alt="" class="profile-image">
+                        {% endif %}
+                        
+                    </h4>
+                </span>
+                <span class="col">
+                    <div class="nickname">{{profile.nickname}}({{profile.user}})</div>
+                    <span class="name">{{profile.name}} / {{profile.gender}}</span>
+                    <br>
+                    <span class="old">출생 : {{profile.birth}}</span><br>
+                    {%if request.user == profile.user or request.user.is_staff %}
+                    <!-- 댓글쓴이와 로그인한 유저가 같을 때 보이는 화면 -->
+                    <form action="{% url 'update_profile' user.username %}">
+                        <button type="submit" class="btn btn-light" value="">프로필 편집</button>
+                    </form>
+                    {%endif%}
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="left_content">
+        <div class="class_map">
+            <div class="main_container"></div>
+            <div class="main-map">
+                <div id="map" style="width:500px;height:500px;"></div>
+                <!-- http://map.daum.net/?sName=서울시청&eName=서울고속터미널 -->
+                <script type="text/javascript"
+                    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3dfad8c8cf0702820c5111f7c4c05eb6&libraries=services,clusterer"></script>
+            </div>
+        </div>
+    </div>
+    <div class="right_content">
+        {% for blog in blogs.all %}
+        <div id="post_image">
+            <img src="{{blog.image.url}}" alt="" style="width: 200px; height: 200px;">
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+
+<script>
+
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+        mapOption = {
+            center: new kakao.maps.LatLng(35.871016, 127.7), // 지도의 중심좌표
+            level: 13 // 지도의 확대 레벨
+        };
+
+        //지도 생성 및 객체 리턴함
+    var map = new kakao.maps.Map(mapContainer, mapOption);
+
+    var list_id = document.getElementById("post_id").innerText.split(',');
+    var list_lat = document.getElementById("post_lat").innerText.split(',');
+    var list_lng = document.getElementById("post_lng").innerText.split(',');
+    var list_title = document.getElementById("post_title").innerText.split(',');
+    var list_content = document.getElementById("post_content").innerText.split(',');
+    var list_rating = document.getElementById("post_rating").innerText.split(',');
+    var list_image = document.getElementById("post_image").innerText.split(',');
+
+    var postPosition = [];
+    for (var idx = 0; idx < list_lat.length; idx++) {
+        var data_id = list_id[idx];
+        var data_lat = list_lat[idx];
+        var data_lng = list_lng[idx];
+        var data_title = list_title[idx];
+        var data_content = list_content[idx];
+        var data_rating = list_rating[idx];
+        var data_image = list_image[idx];
+        addMarker(new kakao.maps.LatLng(data_lat, data_lng), data_id, data_title, data_content, data_rating, data_image);
+
+    }
+
+    //주석
+
+    var clusterer = new kakao.maps.MarkerClusterer({
+        map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
+        averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정 
+        minLevel: 10 // 클러스터 할 최소 지도 레벨 
+    });
+    // 데이터를 가져오기 위해 jQuery를 사용합니다
+    // 데이터를 가져와 마커를 생성하고 클러스터러 객체에 넘겨줍니다
+    $.get("/templates/chicken.json", function(data) {
+        // 데이터에서 좌표 값을 가지고 마커를 표시합니다
+        // 마커 클러스터러로 관리할 마커 객체는 생성할 때 지도 객체를 설정하지 않습니다
+        var markers = $(data.positions).map(function(i, position) {
+            return new kakao.maps.Marker({
+                position : new kakao.maps.LatLng(position.lat, position.lng)
+            });
+        });
+
+        // 클러스터러에 마커들을 추가합니다
+        clusterer.addMarkers(markers);
+    });
+
+
+
+    //주석
+
+
+    function addMarker(position, d_id, d_title, d_content, d_rating, d_image) {
+        var marker = new kakao.maps.Marker({
+            map: map,
+            position: position,
+            clickable : true
+        });
+
+
+
+        var content = '<div class="wrap">' +
+            '       <div class="info">' +
+            '           <div class="title">' +
+            d_title +
+            '           </div>' +
+            '           <div class="body">' +
+            '               <div class="img">' +
+            '                   <img src="' + d_image + '" width="73" height="70">' +
+            '               </div>' +
+            '           <div class="desc">' +
+            '               <div class="">평점' + d_rating + '</div>' +
+            '               <div class="">위치' + position + '</div>' +
+            '               <div class="">한줄평' + d_content + '</div>' +
+            '           </div>' +
+            '       </div>' +
+            '   </div>' +
+            '</div>';
+        var overlay = new kakao.maps.CustomOverlay({
+            content: content,
+            map: map,
+            position: marker.getPosition()
+        });
+
+        overlay.setMap(null);
+
+        kakao.maps.event.addListener(marker, 'mouseover', function () {
+            overlay.setMap(map)
+        });
+
+        kakao.maps.event.addListener(marker, 'mouseout', function () {
+            overlay.setMap(null)
+        });
+        kakao.maps.event.addListener(marker, 'click', function() {
+            var url = "{% url 'detail' 1 %}";
+            var id = Number(d_id);
+            console.log(d_id);
+            location.href= url.replace('1', id);
+      });
+    }
+</script>
+{%endblock%}
