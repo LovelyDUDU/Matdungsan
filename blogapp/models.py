@@ -14,6 +14,7 @@ class Blog(models.Model):
     image = models.ImageField(upload_to='images/', blank=True) # 사진
     latitude = models.FloatField() # 위도
     longtitude = models.FloatField() # 경도
+    like = models.ManyToManyField(User, related_name='likes', blank=True)
     # public = models.BooleanField(default=False) #공개 유무
     
     def __str__(self):
@@ -22,6 +23,14 @@ class Blog(models.Model):
     def summary(self):
         return self.content[:30]
 
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    content = models.TextField(blank = True)
+    created_at = models.DateTimeField('date published')
+
+    def __str__(self):
+        return self.content
 
 class Profile(models.Model): 
     user = models.OneToOneField(User, on_delete=models.CASCADE) #유저랑 1:1관계

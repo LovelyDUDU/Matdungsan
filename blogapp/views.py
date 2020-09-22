@@ -1,7 +1,9 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.utils import timezone
-from .models import Blog, Profile
+from .models import Blog, Profile, Comment
 from django.contrib.auth.models import User
+from django.http import HttpResponse,JsonResponse
+import json
 import ctypes
 
 def index(request):
@@ -33,22 +35,63 @@ def create(request):
     else:
         return redirect(create)
 
+def detail(request, post_id):
+    post = Blog.objects.get(id=post_id)
+    comment = Comment.objects.filter(post=post.id)
+    context = {
+        "post":post,
+        "comment": comment
+    }
+    return render(request,'detail.html',context)
+
+def likes(request):
+    if request.is_ajax():
+        post_id = request.GET['post_id']
+        post = Blog.objects.get(id=post_id)
+
+        if not request.user.is_authenticated:
+            message = "로그인이 필요합니다."
+            context ={'like_count' : post.like.count(), "message":message}
+            return HttpResponse(json.dumps(context), content_type = 'application/json')
+        
+        user = request.user
+        if post.like.filter(id = user.id).exists():
+            post.like.remove(user)
+            message = "좋아요 취소"
+        else:
+            post.like.add(user)
+            message = "좋아요"
+        
+        context={'like_count' : post.like.count(), "message": message}
+        return HttpResponse(json.dumps(context), content_type='application/json')
+
+def create_comment(request, post_id):
+    if request.method =="POST":
+        comment = Comment()
+        comment.user = request.user
+        comment.post = Blog.objects.get(id=post_id)
+        comment.content = request.POST['comment']
+        comment.created_at = timezone.datetime.now()
+        comment.save()
+        return redirect('/blogapp/detail/' + str(post_id))
+
+def delete_comment(request, post_id, comment_id):
+    d_comment = Comment.objects.get(id=comment_id)
+    d_comment.delete()
+    return redirect('/blogapp/detail/' + str(post_id))
 
 def profile(request, user):
-    blogs = Blog.objects.filter(user=request.user)
+    user =User.objects.get(id=request.user.id)
+    blogs = Blog.objects.filter(user =request.user)
     profile = Profile.objects.get(user = request.user)
+    post_likes = user.likes.all()
     context={
         "profile":profile,
-        "blogs":blogs
+        "blogs":blogs,
+        "post_likes" : post_likes,
         }   
     return render(request, 'profile.html', context)
 
-def detail(request, post_id):
-    post = Blog.objects.get(id=post_id)
-    context = {
-        "post":post
-    }
-    return render(request,'detail.html',context)
 
 def update_profile(request, user):
     if request.method=="GET":
