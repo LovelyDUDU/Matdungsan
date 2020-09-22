@@ -6,23 +6,23 @@
 <form method="POST" action="{% url 'signup'%}">
 {% csrf_token %}
     아이디:
-    <input name="id" type="text" value="">
+    <input name="id" type="text" value=""><br>
     비밀번호:
-    <input name="password1" type="password" value="">
+    <input name="password1" type="password" value=""><br>
     비밀번호 확인:
-    <input name="password2" type="password" value="">
+    <input name="password2" type="password" value=""><br>
     별명:
-    <input name="nickname" type="text" value="">
+    <input name="nickname" type="text" value=""><br>
     이름:
-    <input name="name" type="text" value="">
+    <input name="name" type="text" value=""><br>
     성별:
     <select name="gender" id="">
         <option value="남성">남성</option>
         <option value="여성">여성</option>
-    </select>
+    </select><br>
     생년월일:
-    <input name="birth" type="text" value="" placeholder="YYYY-MM-DD">
-    
+    <input name="birth" type="text" value="" placeholder="YYYY-MM-DD"><br>
+    <br>
     <input type="submit" value="Sign Up!">
 </form>
 {% endblock %}

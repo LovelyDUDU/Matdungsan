@@ -3,6 +3,7 @@ from django.utils import timezone
 from .models import Blog, Profile, Comment
 from django.contrib.auth.models import User
 from django.http import HttpResponse,JsonResponse
+from django.core.paginator import Paginator
 import json
 import ctypes
 
@@ -82,13 +83,17 @@ def delete_comment(request, post_id, comment_id):
 
 def profile(request, user):
     user =User.objects.get(id=request.user.id)
-    blogs = Blog.objects.filter(user =request.user)
+    blogs = Blog.objects.filter(user =request.user).order_by('-id')
+    paginator=Paginator(blogs,9) #blogs 객체를 9개 단위로 자름
+    page = request.GET.get('page')
+    posts=paginator.get_page(page)
     profile = Profile.objects.get(user = request.user)
     post_likes = user.likes.all()
     context={
         "profile":profile,
         "blogs":blogs,
         "post_likes" : post_likes,
+        "posts":posts,
         }   
     return render(request, 'profile.html', context)
 
