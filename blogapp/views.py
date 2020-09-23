@@ -7,16 +7,25 @@ from django.core.paginator import Paginator
 import json
 import ctypes
 
+def search_mountain(request):
+    schText=request.GET['search']
+    mountains = Mountain.objects.filter(name__icontains=schText)
+    return render(request, 'search_mountain.html', {'mountains':mountains})
+
+
 def index(request):
     blogs = Blog.objects.all()
-    temp = Blog.objects.filter(tags__name__in=["저거"])
-    print(blogs)
-    for i in temp:
+    return render(request, 'index.html', {'blogs': blogs})
+
+def tag_search(request):
+    schTag = request.GET['tag_search']
+    blogs = Blog.objects.all()
+    tags = Blog.objects.filter(tags__name__in=[schTag])
+    for i in tags:
         print(i.title)
         print(i.content)
     return render(request, 'index.html', {'blogs': blogs})
-
-
+    
 def create(request):
     if request.user.is_authenticated:
         if request.method == "GET":

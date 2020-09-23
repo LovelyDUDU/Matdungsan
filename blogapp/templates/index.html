@@ -8,14 +8,17 @@
         <img class="masthead-avatar mb-5" src="{% static 'images/index_logo1.jpg' %}" alt="" />
         <!-- 검색창 -->
         <fieldset class="field-container">
-            <input type="text" placeholder="Search..." class="field" />
-            <div class="icons-container">
-                <div class="icon-search"></div>
-                <div class="icon-close">
-                    <div class="x-up"></div>
-                    <div class="x-down"></div>
+            <form action="{% url 'tag_search' %}">
+                <input type="text" placeholder="Search..." class="field" id="tag_search" name ="tag_search"/>
+                <div class="icons-container">
+                    <div class="icon-search"></div>
+                    <div class="icon-close">
+                        <div class="x-up"></div>
+                        <div class="x-down"></div>
+                    </div>
                 </div>
-            </div>
+                <input type="submit" value="검색">
+            </form>
         </fieldset>
         <br>
         <!-- Masthead Heading-->

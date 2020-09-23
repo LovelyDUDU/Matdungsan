@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
+    path('tag_search/', views.tag_search, name='tag_search'),
     path('create/', views.create, name='create'),
     path('profile/<str:user>',views.profile, name='profile'), #메인에서 프로필화면 가기
     path('detail/<int:post_id>',views.detail,name='detail'), # 게시글 읽기
