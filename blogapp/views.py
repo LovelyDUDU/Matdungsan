@@ -9,6 +9,11 @@ import ctypes
 
 def index(request):
     blogs = Blog.objects.all()
+    temp = Blog.objects.filter(tags__name__in=["저거"])
+    print(blogs)
+    for i in temp:
+        print(i.title)
+        print(i.content)
     return render(request, 'index.html', {'blogs': blogs})
 
 
@@ -25,13 +30,14 @@ def create(request):
             blog.rating = request.POST['rating']
             blog.content = request.POST['content']
             blog.pub_date = timezone.datetime.now()
-            try:
-                blog.image=request.FILES['image']
-            except:
-                return ctypes.windll.user32.MessageBoxW(None, "에러", "사진을 첨부하세요", 5)
+            blog.image=request.FILES['image']
             blog.latitude = request.POST['latitude']
             blog.longtitude = request.POST['longtitude']
+            tags=request.POST.get('tags', '').split(',')
             blog.save()
+            for tag in tags:
+                tag = tag.strip()
+                blog.tags.add(tag)
             return redirect(create)
     else:
         return redirect(create)

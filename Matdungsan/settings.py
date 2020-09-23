@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'blogapp',
     'accountapp',
     'mountainapp',
+    'taggit',
 ]
 
 MIDDLEWARE = [

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from taggit.managers import TaggableManager
 
 # Create your models here.
 # 게시물 작성할때 들어갈 내용 : 제목, 내용, 위도, 경도, 이미지, 공개유무
@@ -15,6 +16,7 @@ class Blog(models.Model):
     latitude = models.FloatField() # 위도
     longtitude = models.FloatField() # 경도
     like = models.ManyToManyField(User, related_name='likes', blank=True)
+    tags = TaggableManager(blank=True)
     # public = models.BooleanField(default=False) #공개 유무
     
     def __str__(self):

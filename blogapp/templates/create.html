@@ -13,20 +13,21 @@
     <div class="class_create">
         <form action="{% url 'create' %}" method="POST" enctype="multipart/form-data">
             {%csrf_token%}
-            제목 : <input type="text" name="title">
+            제목 : <input type="text" name="title" id="title">
             <br>
-            평점 : 
+            평점 :
             <select name="rating">
                 <option value="5" selected="selected">★★★★★</option>
                 <option value="4">★★★★</option>
-                <option value="3" >★★★</option>
+                <option value="3">★★★</option>
                 <option value="2">★★</option>
                 <option value="1">★</option>
             </select>
             <br>
-            한줄평 : <textarea cols=20 rows=1 name="content"></textarea>
+            한줄평 : <textarea cols=20 rows=1 name="content" id="content"></textarea>
             <br>
-            이미지 : <input type="file" name="image"><br>
+            이미지 : <input type="file" name="image" id="image"><br>
+            태그 : <input type="text" name="tags" id="tags"><br>
             위도 : <input type="text" name="latitude" id="lat" readonly><br>
             경도 : <input type="text" name="longtitude" id="long" readonly><br>
             <input type="submit" value="등록하기" id="posting">
@@ -72,6 +73,30 @@
 </div>
 
 <script>
+    $("#posting").click(function () {
+        var file = $("#image").val();
+        if ($("#title").val().length <= 0) {
+            alert("제목을 입력하세요.");
+            $("#title").focus();
+            return false;
+        }
+        else if ($("#content").val().length <= 0) {
+            alert("내용을 입력하세요.");
+            $("#content").focus();
+            return false;
+        }
+        else if ($("#lat").val().length <= 0) {
+            alert("위치를 찍으세요.");
+            return false;
+        }
+        else if (!file) {
+            alert("사진을 첨부하세요.");
+            return false;
+        }
+        else {
+            $("#posting").submit();
+        }
+    });
 
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
         mapOption = {
