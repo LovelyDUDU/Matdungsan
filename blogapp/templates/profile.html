@@ -57,15 +57,31 @@
                     </h4>
                 </span>
                 <span class="col">
-                    <div class="nickname">{{profile.nickname}}({{profile.user}})</div>
-                    <span class="name">{{profile.name}} / {{profile.gender}}</span>
-                    <br>
-                    <span class="old">출생 : {{profile.birth}}</span><br>
+                    <div class="nickname">{{profile.nickname}}({{profile.user.username}})</div>
+                    <span class="name">{{profile.name}} / {{profile.gender}}</span><br>
+                    <span class="grade">등급 : {{profile.grade}}</span><br>
+                    <div>이메일 : {{profile.user.email}}</div>
+                    <div>연령대 : {{profile.age_group}}</div>
+                    <span class="following_count">팔로잉수 : {{profile.following.count}}</span><br>
+                    <span class="follower_count">팔로워수 : {{profile.follower.count}}</span><br>
                     {%if request.user == profile.user or request.user.is_staff %}
                     <!-- 댓글쓴이와 로그인한 유저가 같을 때 보이는 화면 -->
                     <form action="{% url 'update_profile' user.username %}">
                         <button type="submit" class="btn btn-light" value="">프로필 편집</button>
                     </form>
+                    {%endif%}
+                    {%if request.user != profile.user or request.user.is_staff %}
+                    <!-- 댓글쓴이와 로그인한 유저가 다를 때 보이는 화면 -->
+                    <button id="{{profile.user.id}}" onclick="follow(this.id)"> 
+                        {% if request.user in profile.following.all %}
+                            <!-- 로그인한 유저가 팔로우한 유저일때-->
+                            <i id="heart" class="fas fa-heart"></i>
+                            {% else %}
+                            <!-- 로그인한 유저가 팔로우한 유저가 아닐때 -->
+                            <i id="heart" class="far fa-heart"></i>
+                            {% endif %}
+                            <span id="follower_count">{{profile.follower.count}}</span> 
+                    </button>
                     {%endif%}
                 </span>
             </div>
@@ -105,6 +121,31 @@
 
 
 
+<script type="text/javascript">
+    function follow(id) {
+        $.ajax({
+            url: "{%url 'follow' %}", // data를 전송할 url 입니다.
+            data: {
+                'profile_id': id
+            }, // profile_id 라는 name으로 id 값 전송
+            dataType: "json",
+            success: function (response) { // ajax 통신이 정상적으로 완료되었을 때
+                $('#follower_count').html(response.follower_count) //id가 like_count의 내용을 전송받은 좋아요 수로 바꾼다
+                $('#message').html(response.message) //id가 message의 내용을 전송받은 message로 바꾼다
+                $('.toast').fadeIn(400).delay(100).fadeOut(400) //class가 toast인 것을 서서히 나타나게 하는 메서드입니다.
+                if (response.message == "팔로우")
+                //좋아요 눌렀을 때 
+                {
+                    $('#heart').attr("class", "fas fa-heart")
+                } else if (response.message == "팔로우 취소")
+                //좋아요 상태에서 다시 눌렀을 때 
+                {
+                    $('#heart').attr("class", "far fa-heart")
+                }
+            }
+        })
+    }
+</script>
 
 <script>
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div 

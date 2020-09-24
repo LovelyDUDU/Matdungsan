@@ -2,7 +2,7 @@
 {% block contents %}
 <div style="margin-top:100px;"></div>
 <div>
-    닉네임 : {{post.user.profile.nickname}}<br>
+    닉네임 : <a href="{% url 'profile' post.user.username %}">{{post.user.profile.nickname}}</a><br>
     <img src="{{post.image.url}}" alt="" style="width: 200px; height: 200px"><br>
     글번호 : {{post.id}}<br>
     제목 : {{post.title}}<br>

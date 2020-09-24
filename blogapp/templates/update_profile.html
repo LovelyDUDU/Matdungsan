@@ -9,13 +9,22 @@
     <input name="nickname" type="text" value="{{profile.nickname}}"><br>
     이름:
     <input name="name" type="text" value="{{profile.name}}"><br>
+    이메일:
+    <input name="email" type="text" value="{{profile.user.email}}"><br>
     성별:
     <select name="gender" id="gender" >
         <option value="남성">남성</option>
         <option value="여성">여성</option>
     </select><br>
-    생년월일:
-    <input name="birth" type="text" value="{{profile.birth}}" placeholder="YYYY-MM-DD"><br>
+    연령대:
+    <select name="age_group" id="age_group">
+        <option value="10대">10대</option>
+        <option value="20대">20대</option>
+        <option value="30대">30대</option>
+        <option value="40대">40대</option>
+        <option value="50대">50대</option>
+        <option value="60대">60대 이상</option>
+    </select><br>
     프로필 사진 :
     {% if profile.image %}
     <img src="{{profile.image.url}}" alt="" width="320" height="100" class="profile-image">
@@ -34,5 +43,6 @@
 </form>
 <script>
     $("#gender").val("{{profile.gender}}");
+    $("#age_group").val("{{profile.age_group}}");
 </script>
 {% endblock %}

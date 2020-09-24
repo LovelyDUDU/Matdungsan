@@ -2,17 +2,19 @@ from django.shortcuts import render,redirect
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib import auth
+import os,sys
 # Create your views here.
 def signup(request):
     if request.method == 'POST': #값이 넘겨졌을 경우 
         if request.POST['password1'] == request.POST['password2']:  # password 1,2입력된 값이 같다면
             # user 객체를 새로 생성
             user = User.objects.create_user(
-                   username=request.POST['id'], password=request.POST['password1'])
+                   username=request.POST['id'], password=request.POST['password1'], email=request.POST['email'])
             user.profile.name=request.POST['name']
             user.profile.nickname= request.POST['nickname']
             user.profile.gender=request.POST['gender']
-            user.profile.birth=request.POST['birth']
+            user.profile.age_group=request.POST['age_group']
+            user.profile.grade = request.POST['grade']
             try:
                 user.profile.image=request.FILES['image']
             except:

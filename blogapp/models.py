@@ -17,7 +17,6 @@ class Blog(models.Model):
     longtitude = models.FloatField() # 경도
     like = models.ManyToManyField(User, related_name='likes', blank=True)
     tags = TaggableManager(blank=True)
-    # public = models.BooleanField(default=False) #공개 유무
     
     def __str__(self):
         return self.title
@@ -39,9 +38,13 @@ class Profile(models.Model):
     name=models.CharField(max_length=10) #이름
     nickname=models.CharField(max_length=10) #닉네임
     gender = models.CharField(max_length=5) #성별
-    birth = models.CharField(max_length=10) #생년월일
+    age_group = models.CharField(max_length=5, blank=True) #연령대
+    grade = models.CharField(max_length=15, blank=True) #등급
+    complete_count = models.IntegerField(default=0) #등반 완료 횟수
     image = models.ImageField(upload_to='images/',null=True, blank=True) #프로필 사진첨부
-
+    following = models.ManyToManyField('self', related_name = 'r_following', blank=True) #팔로잉 기능
+    follower = models.ManyToManyField('self', related_name= 'r_follower', blank=True) #팔로워 기능
+    #####################완등횟수 다음에 지울것 -> Mountain모델로 조회가능#####################
     def __str__(self):
         n_user=str(self.user)
         return n_user
