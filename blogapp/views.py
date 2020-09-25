@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.utils import timezone
-from .models import Blog, Profile, Comment
+from .models import Blog, Profile, Comment, FollowRelation
 from django.contrib.auth.models import User
 from django.http import HttpResponse,JsonResponse
 from django.core.paginator import Paginator
@@ -93,28 +93,31 @@ def follow(request):
         q_user = Profile.objects.get(id=request.user.id) #나
         print("접속자 : " + str(q_user))
         print("프로필주인 : " + str(p_user))
+
+        try:
+            relation = FollowRelation.objects.get(follower = request.user)
+        except FollowRelation.DoesNotExist:
+            relation = FollowRelation.objects.create(follower=request.user)
+
         if not request.user.is_authenticated:
             message = "로그인이 필요합니다."
             context ={
-                'following_count' : p_user.following.count(),
-                'follower_count' : p_user.follower.count(),
                  "message":message,
                  }
             return HttpResponse(json.dumps(context), content_type = 'application/json')
-        if p_user.follower.filter(id = q_user.id).exists(): #프로필주인 follower에 내가 있으면 팔로우 취소 
-            p_user.follower.remove(q_user.id) # 프로필주인 follower 제거, 
-            #q_user.following.remove(p_user.id) # 나의 following 제거
+
+        if relation.followee.filter(id = profile_id).exists(): #프로필주인 follower에 내가 있으면 팔로우 취소 
+            relation.followee.remove(profile_id)
+            relation.save()
             message = "팔로우 취소"
             print("팔로우 취소")
         else: #프로필주인 follower에 내가 없으면 q_user -> p_user
-            p_user.follower.add(q_user.id) #프로필주인의 팔로워에 나를 넣고
-            #q_user.following.add(p_user.id) #나의 팔로잉에 상대를 넣고
+            relation.followee.add(profile_id)
+            relation.save()
             message = "팔로우"
             print("팔로우")
         
         context={
-            'following_count' : p_user.following.count(),
-            'follower_count' : p_user.follower.count(),
             "message": message,
             }
         
@@ -143,17 +146,24 @@ def profile(request, user):
     posts=paginator.get_page(page)
     profile = Profile.objects.get(user = user)
     post_likes = user.likes.all()
-    # print(profile)
-    # print(user)
+
+    followers = FollowRelation.objects.select_related('follower').filter(followee__in = [user]) # 나를 팔로우 하는 사람들
     context={
         "profile":profile,
         "blogs":blogs,
         "post_likes" : post_likes,
         "posts":posts,
+        "followers":followers,
         }
-    # print("좋아요한 게시물 출력")
-    # for i in post_likes:
-    #     print(i.title + " - " + i.content)
+    try:
+        followees = FollowRelation.objects.get(follower=user).followee.all() # 내가 팔로우 하는 사람들
+        context['followees'] = followees
+    except FollowRelation.DoesNotExist:
+        relation = FollowRelation.objects.create(follower=request.user)
+        relation.save()
+        followees = FollowRelation.objects.get(follower=user).followee.all() # 내가 팔로우 하는 사람들
+        context['followees'] = followees
+  
     return render(request, 'profile.html', context)
 
 def p_profile(request, post_id):

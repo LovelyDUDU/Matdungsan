@@ -62,8 +62,8 @@
                     <span class="grade">등급 : {{profile.grade}}</span><br>
                     <div>이메일 : {{profile.user.email}}</div>
                     <div>연령대 : {{profile.age_group}}</div>
-                    <span class="following_count">팔로잉수 : {{profile.following.count}}</span><br>
-                    <span class="follower_count">팔로워수 : {{profile.follower.count}}</span><br>
+                    <span class="following_count">팔로워수(나를 팔로우 하는 사람 수) : {{followers.count}}</span><br>
+                    <span class="follower_count">팔로잉수(내가 팔로우 하는사람 수) : {{followees.count}}</span><br>
                     {%if request.user == profile.user or request.user.is_staff %}
                     <!-- 댓글쓴이와 로그인한 유저가 같을 때 보이는 화면 -->
                     <form action="{% url 'update_profile' user.username %}">
@@ -80,7 +80,6 @@
                             <!-- 로그인한 유저가 팔로우한 유저가 아닐때 -->
                             <i id="heart" class="far fa-heart"></i>
                             {% endif %}
-                            <span id="follower_count">{{profile.follower.count}}</span> 
                     </button>
                     {%endif%}
                 </span>
@@ -130,7 +129,6 @@
             }, // profile_id 라는 name으로 id 값 전송
             dataType: "json",
             success: function (response) { // ajax 통신이 정상적으로 완료되었을 때
-                $('#follower_count').html(response.follower_count) //id가 like_count의 내용을 전송받은 좋아요 수로 바꾼다
                 $('#message').html(response.message) //id가 message의 내용을 전송받은 message로 바꾼다
                 $('.toast').fadeIn(400).delay(100).fadeOut(400) //class가 toast인 것을 서서히 나타나게 하는 메서드입니다.
                 if (response.message == "팔로우")

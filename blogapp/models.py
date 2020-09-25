@@ -40,11 +40,9 @@ class Profile(models.Model):
     gender = models.CharField(max_length=5) #성별
     age_group = models.CharField(max_length=5, blank=True) #연령대
     grade = models.CharField(max_length=15, blank=True) #등급
-    complete_count = models.IntegerField(default=0) #등반 완료 횟수
     image = models.ImageField(upload_to='images/',null=True, blank=True) #프로필 사진첨부
-    following = models.ManyToManyField('self', related_name = 'r_following', blank=True) #팔로잉 기능
-    follower = models.ManyToManyField('self', related_name= 'r_follower', blank=True) #팔로워 기능
-    #####################완등횟수 다음에 지울것 -> Mountain모델로 조회가능#####################
+    #complete_count = models.IntegerField(default=0) 
+    # 등반 완료 횟수#####################완등횟수 다음에 지울것 -> Mountain모델로 조회가능#####################
     def __str__(self):
         n_user=str(self.user)
         return n_user
@@ -59,3 +57,11 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+class FollowRelation(models.Model):
+    follower = models.OneToOneField(User, related_name='follower', on_delete=models.CASCADE)
+    followee = models.ManyToManyField(User, related_name='followee')
+    
+    def __str__(self):
+        return self.follower

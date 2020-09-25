@@ -6,6 +6,9 @@ class Mountain(models.Model):
     name = models.CharField(max_length=20)
     address = models.TextField()
     completed = models.ManyToManyField(User, related_name='complited', blank=True)
+    image = models.ImageField(upload_to='images/', blank=True) # 사진
+    latitude = models.FloatField(blank = True) # 위도
+    longtitude = models.FloatField(blank = True) # 경도
     completed_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
