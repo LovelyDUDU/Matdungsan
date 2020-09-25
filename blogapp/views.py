@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.utils import timezone
-from .models import Blog, Profile, Comment, FollowRelation
+from .models import Blog, Board, Profile, Comment, FollowRelation
 from django.contrib.auth.models import User
 from django.http import HttpResponse,JsonResponse
 from django.core.paginator import Paginator
@@ -50,6 +50,26 @@ def create(request):
             return redirect(create)
     else:
         return redirect(create)
+
+def board_create(request):
+    if request.user.is_authenticated:
+        if request.method == "GET":
+            boards = Board.objects.all()
+            return render(request, 'board_create.html', {'boards': boards})
+    
+        elif request.method =="POST":
+            board = Board()
+            board.user = request.user
+            board.content = request.POST['content'] # 내용
+            board.image=request.FILES['image'] #이미지
+            tags=request.POST.get('tags', '').split(',') #태그
+            board.save()
+            for tag in tags:
+                tag = tag.strip()
+                board.tags.add(tag)
+            return redirect(board_create)
+    else:
+        return redirect(board_create)
 
 def detail(request, post_id):
     post = Blog.objects.get(id=post_id)
@@ -140,8 +160,9 @@ def delete_comment(request, post_id, comment_id):
 
 def profile(request, user):
     user =User.objects.get(username=user)
-    blogs = Blog.objects.filter(user =user).order_by('-id')
-    paginator=Paginator(blogs,9) #blogs 객체를 9개 단위로 자름
+    blogs = Blog.objects.filter(user =user).order_by('-id') #지도있는거 가져옴
+    boards = Board.objects.filter(user = user).order_by('-id') #지도없는거 가져옴
+    paginator=Paginator(boards,9) #blogs 객체를 9개 단위로 자름
     page = request.GET.get('page')
     posts=paginator.get_page(page)
     profile = Profile.objects.get(user = user)
@@ -149,6 +170,7 @@ def profile(request, user):
 
     followers = FollowRelation.objects.select_related('follower').filter(followee__in = [user]) # 나를 팔로우 하는 사람들
     context={
+        "boards" : boards,
         "profile":profile,
         "blogs":blogs,
         "post_likes" : post_likes,
@@ -166,6 +188,8 @@ def profile(request, user):
   
     return render(request, 'profile.html', context)
 
+
+
 def p_profile(request, post_id):
     post = Blog.objects.get(id=post_id)
     user = User.objects.get(post=post)
@@ -177,6 +201,7 @@ def p_profile(request, post_id):
 
 
 def update_profile(request, user):
+    
     if request.method=="GET":
         profile = Profile.objects.get(user = request.user)
         context={
@@ -194,4 +219,5 @@ def update_profile(request, user):
         except:
             pass
         profile.save()
+        user=str(request.user)
         return redirect('/' + 'blogapp/profile/' + user)

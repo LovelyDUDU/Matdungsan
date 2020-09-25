@@ -33,6 +33,9 @@
     <script type="text/javascript" src="{% static 'js/jqBootstrapValidation.js' %}"></script>
     <!-- kakaomap api lib -->
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=APIKEY&libraries=services,clusterer,drawing"></script>
+    <link href="{% block link %} {% endblock %}"?after>
+    {% block css %}
+    {% endblock css %}
 </head>
 
 <body id="page-top">
@@ -58,8 +61,6 @@
                             href="{% url 'profile' user.username %}">내 공간</a></li>
                     <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
                             href="{% url 'complete_climbing' user.username %}">완등하러 가기</a></li>
-                    <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
-                            href="{% url 'create'%}">글쓰기</a></li>
                     <form name="lgout" method="POST" action="{% url 'logout' %}">
                         {% csrf_token %}
                         <input type="hidden" value="로그아웃">

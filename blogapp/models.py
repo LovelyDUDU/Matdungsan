@@ -5,6 +5,15 @@ from django.dispatch import receiver
 from taggit.managers import TaggableManager
 
 # Create your models here.
+class Board(models.Model): #일반 게시물 - 내용, 해시태그, 이미지
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    image = models.ImageField(upload_to = 'images/', blank=True)
+    tags= TaggableManager(blank= True)
+
+    def __str__(self):
+        return self.content[:15]
+
 # 게시물 작성할때 들어갈 내용 : 제목, 내용, 위도, 경도, 이미지, 공개유무
 class Blog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
