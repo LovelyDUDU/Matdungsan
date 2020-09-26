@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block css %}
-<link rel="stylesheet" href="{% static 'css/detail_style.css' %}">
+<link rel="stylesheet" href="{% static 'css/board_detail_style.css' %}">
 {% endblock css %}
 
 {% block contents %}
@@ -18,15 +18,12 @@
             <div class="posting-title">
                 <p><a href="{% url 'profile' post.user.username %}" style="text-decoration: none;">{{post.user.profile.nickname}}님의</a></p>
                 <p>{{ post.pub_date|date:"m"}}월{{ post.pub_date|date:"d"}}일 산행</p>
-                
             </div>
 
             <div class="user-box">
                 <img src="{{post.user.profile.image.url}}" alt="main user" />
                 <div class="detail-text">
-                    <p class="title">{{post.title}}</p>
-                    <p class="rating">{{post.rating}}</p>
-                    <p class="oneline">{{post.content}}</p>
+                    <p class="title">{{post.content}}</p>
                     <p class="hashtag">
                         {% for tag in post.tags.all %}
                         <span>#{{tag.name}}</span>
@@ -34,14 +31,14 @@
                     </p>
                     <p class="likes">
                         <button id="{{post.id}}" onclick="post_like(this.id)">
-                            {%if request.user in post.like.all%}
+                            {%if request.user in post.blike.all%}
                             <!-- 로그인 한 유저가 좋아요를 누른 유저일때  -->
                             <i id="heart" class="fas fa-heart"></i>
                             {%else%}
                             <!-- 로그인 한 유저가 좋아요를 누른 유저가 아닐 때  -->
                             <i id="heart" class="far fa-heart"></i>
                             {%endif%}
-                            <span id="like_count">{{post.like.count}}</span>
+                            <span id="like_count">{{post.blike.count}}</span>
                         </button>
                     </p>
                     <p class="dates">{{ post.pub_date|date:"yy"}}년 {{ post.pub_date|date:"m"}}월 {{ post.pub_date|date:"d"}}일</p>
@@ -52,7 +49,7 @@
                 {% for c in comment %}
                     <span>{{c.user}}</span> - {{c.content}}
                     {% if request.user == c.user or request.user.is_staff %}
-                    <a href="{% url 'delete_comment' post.id c.id %}" style="text-decoration: none; font-size:10px; text-align:right;">삭제</a>
+                    <a href="{% url 'delete_bcomment' post.id c.id %}" style="text-decoration: none; font-size:10px; text-align:right;">삭제</a>
                     {% endif %}
                     <br>
                     {% endfor %}
@@ -60,7 +57,7 @@
 
             <div class="comment-box">
                 {% if user.is_authenticated %}
-                <form action="{%url 'create_comment' post.id%}" method="POST">
+                <form action="{%url 'create_bcomment' post.id%}" method="POST">
                     {%csrf_token%}
                     <input type="text" name="comment" placeholder="댓글 달기...">
                     <button type="submit" class="posting-button">게시</button>
@@ -83,7 +80,7 @@
 
     function post_like(id) {
         $.ajax({
-            url: "{%url 'likes'%}", // data를 전송할 url 입니다.
+            url: "{%url 'board_likes'%}", // data를 전송할 url 입니다.
             data: {
                 'post_id': id
             }, // post_id 라는 name으로 id 값 전송

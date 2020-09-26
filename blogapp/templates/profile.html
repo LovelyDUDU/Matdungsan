@@ -71,9 +71,9 @@
                     </dd>
                 </div>
                 <div class="profile-detail-item">
-                    <dt>뱃지</dt>
+                    <dt>완등수</dt>
                     <dd>
-                        완등수해야함
+                        {{profile.user.complited.count}}
                     </dd>
                 </div>
                 <div class="profile-detail-item">
@@ -101,40 +101,41 @@
                 {%if request.user != profile.user or request.user.is_staff %}
                 <!-- 댓글쓴이와 로그인한 유저가 다를 때 보이는 화면 -->
                 <button id="{{profile.user.id}}" onclick="follow(this.id)">
-                    {% if request.user in profile.following.all %}
-                    <!-- 로그인한 유저가 팔로우한 유저일때-->
-                    <i id="heart" class="fas fa-heart"></i>
+                    {% if profile.user in request.user.followee.all %}
+                    <i id="heart" class="fas fa-heart"></i><!-- 로그인한 유저가 팔로우한 유저일때-->
                     {% else %}
-                    <!-- 로그인한 유저가 팔로우한 유저가 아닐때 -->
-                    <i id="heart" class="far fa-heart"></i>
+                    <i id="heart" class="far fa-heart"></i><!-- 로그인한 유저가 팔로우한 유저가 아닐때 -->
                     {% endif %}
                 </button>
                 {%endif%}
             </div>
         </div>
     </div>
-    <div class="under-bar">
-        <ul class="small-menu nav">
-            <li class="small-menu-item active">
-                <a class="nav-link active" data-toggle="tab" href="#board_view">게시글</a>
-            </li>
-            <li class="small-menu-item">
-                <a class="nav-link" data-toggle="tab" href="#map_view">지도</a>
-            </li>
-        </ul>
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="board_view">
-                <!-- 사진만 나오는 화면-->
+    <ul class="nav-pills nav">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#board_view">게시글</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#map_view" id="re_map">지도</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="board_view">
+            <!-- 사진만 나오는 화면-->
+            <div>
                 {% for blog in posts %}
                 <span id="post_image" style="">
                     <img src="{{blog.image.url}}" alt=" " style="width: 150px; height: 150px;float:left; width:33%"
-                        onclick="javascript:location.href='{% url 'detail' blog.id %}'">
+                        onclick="javascript:location.href='{% url 'board_detail' blog.id %}'">
                 </span>
                 {% if forloop.counter|divisibleby:"3" %}
                 <br>
                 {% endif %}
                 {% endfor %}
+            </div>
+            
 
+            <div>
                 {%if posts.has_previous%}
                 <a href="?page={{posts.previous_page_number}}">Previous</a>
                 {%endif%}
@@ -142,25 +143,25 @@
                 {%if posts.has_next%}
                 <a href="?page={{posts.next_page_number}}">Next</a>
                 {%endif%}
-
             </div>
-            <!--구분선---------------->
+        </div>
+        <!-------------------------------------------------------------------------------->
 
-            <div class="fade" id="map_view">
-                <!-- 지도가 나오는 화면-->
-                <div class="class_map" style="margin-left:30%;">
-                    <div class="main_container"></div>
-                    <div class="main-map">
-                        <div id="map" style="width:450px;height:450px;"></div>
-                        <script type="text/javascript"
-                            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3dfad8c8cf0702820c5111f7c4c05eb6&libraries=services"></script>
-                    </div>
+        <div class="tab-pane fade" id="map_view">
+            <!-- 지도가 나오는 화면-->
+            <div class="class_map">
+                <div class="main_container"></div>
+                <div class="main-map">
+                    <div id="map" style="width:450px;height:450px;"></div>
+                    <script type="text/javascript"
+                        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3dfad8c8cf0702820c5111f7c4c05eb6&libraries=services"></script>
                 </div>
             </div>
         </div>
 
-    </div>
 
+
+    </div>
 </main>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -169,35 +170,11 @@
 
 
 
-<script type="text/javascript">
-    function follow(id) {
-        $.ajax({
-            url: "{%url 'follow' %}", // data를 전송할 url 입니다.
-            data: {
-                'profile_id': id
-            }, // profile_id 라는 name으로 id 값 전송
-            dataType: "json",
-            success: function (response) { // ajax 통신이 정상적으로 완료되었을 때
-                $('#message').html(response.message) //id가 message의 내용을 전송받은 message로 바꾼다
-                $('.toast').fadeIn(400).delay(100).fadeOut(400) //class가 toast인 것을 서서히 나타나게 하는 메서드입니다.
-                if (response.message == "팔로우")
-                //좋아요 눌렀을 때 
-                {
-                    $('#heart').attr("class", "fas fa-heart")
-                } else if (response.message == "팔로우 취소")
-                //좋아요 상태에서 다시 눌렀을 때 
-                {
-                    $('#heart').attr("class", "far fa-heart")
-                }
-            }
-        })
-    }
-</script>
 
 <script>
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
         mapOption = {
-            center: new kakao.maps.LatLng(35.871016, 127.7), // 지도의 중심좌표
+            center: new kakao.maps.LatLng(37.871016, 125.3), // 지도의 중심좌표
             level: 13 // 지도의 확대 레벨
         };
 
@@ -271,5 +248,39 @@
             location.href = url.replace('1', id);
         });
     }
+    $(function(){
+        $('#re_map').click(function(){
+            map.relayout();
+            map.relayout();
+            
+        });
+    });
 </script>
+
+<script type="text/javascript">
+    function follow(id) {
+        $.ajax({
+            url: "{%url 'follow' %}", // data를 전송할 url 입니다.
+            data: {
+                'profile_id': id
+            }, // profile_id 라는 name으로 id 값 전송
+            dataType: "json",
+            success: function (response) { // ajax 통신이 정상적으로 완료되었을 때
+                $('#message').html(response.message) //id가 message의 내용을 전송받은 message로 바꾼다
+                $('.toast').fadeIn(400).delay(100).fadeOut(400) //class가 toast인 것을 서서히 나타나게 하는 메서드입니다.
+                if (response.message == "팔로우")
+                //좋아요 눌렀을 때 
+                {
+                    $('#heart').attr("class", "fas fa-heart")
+                }
+                else if (response.message == "팔로우 취소")
+                //좋아요 상태에서 다시 눌렀을 때 
+                {
+                    $('#heart').attr("class", "far fa-heart")
+                }
+            }
+        })
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 {% endblock %}

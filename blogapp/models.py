@@ -6,13 +6,24 @@ from taggit.managers import TaggableManager
 
 # Create your models here.
 class Board(models.Model): #일반 게시물 - 내용, 해시태그, 이미지
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
-    image = models.ImageField(upload_to = 'images/', blank=True)
-    tags= TaggableManager(blank= True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE) #글쓴사람
+    content = models.TextField() #내용
+    pub_date = models.DateTimeField('date published') # 작성 시간
+    image = models.ImageField(upload_to = 'images/', blank=True) # 사진
+    blike = models.ManyToManyField(User, related_name='blikes', blank=True)  #좋아요
+    tags= TaggableManager(blank= True) # 해시태그
 
     def __str__(self):
         return self.content[:15]
+
+class Board_Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Board, on_delete=models.CASCADE)
+    content = models.TextField(blank = True)
+    created_at = models.DateTimeField('date published')
+
+    def __str__(self):
+        return self.content
 
 # 게시물 작성할때 들어갈 내용 : 제목, 내용, 위도, 경도, 이미지, 공개유무
 class Blog(models.Model):
@@ -32,6 +43,8 @@ class Blog(models.Model):
         
     def summary(self):
         return self.content[:30]
+
+
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -73,4 +86,5 @@ class FollowRelation(models.Model):
     followee = models.ManyToManyField(User, related_name='followee')
     
     def __str__(self):
-        return self.follower
+        n_follower = str(self.follower)
+        return n_follower

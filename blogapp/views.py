@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.utils import timezone
-from .models import Blog, Board, Profile, Comment, FollowRelation
+from .models import Blog, Board, Profile, Comment, FollowRelation, Board_Comment
 from django.contrib.auth.models import User
 from django.http import HttpResponse,JsonResponse
 from django.core.paginator import Paginator
@@ -61,6 +61,7 @@ def board_create(request):
             board = Board()
             board.user = request.user
             board.content = request.POST['content'] # 내용
+            board.pub_date = timezone.datetime.now()
             board.image=request.FILES['image'] #이미지
             tags=request.POST.get('tags', '').split(',') #태그
             board.save()
@@ -84,6 +85,20 @@ def detail(request, post_id):
         print(i.username + " - " + p.nickname + " - " + p.name)
     return render(request,'detail.html',context)
 
+
+def board_detail(request, post_id):
+    post = Board.objects.get(id=post_id)
+    comment = Board_Comment.objects.filter(post=post.id)
+    context = {
+        "post":post,
+        "comment": comment
+    }
+    who_like = post.blike.all() #좋아요 누른 사람
+    for i in who_like:
+        p = Profile.objects.get(user=i)
+        print(i.username + " - " + p.nickname + " - " + p.name)
+    return render(request,'board_detail.html',context)
+
 def likes(request):
     if request.is_ajax():
         post_id = request.GET['post_id']
@@ -106,8 +121,34 @@ def likes(request):
         
         return HttpResponse(json.dumps(context), content_type='application/json')
 
+
+def board_likes(request):
+    if request.is_ajax():
+        post_id = request.GET['post_id']
+        post = Board.objects.get(id=post_id)
+
+        if not request.user.is_authenticated:
+            message = "로그인이 필요합니다."
+            context ={'like_count' : post.blike.count(), "message":message}
+            return HttpResponse(json.dumps(context), content_type = 'application/json')
+        print(post)
+        user = request.user
+        if post.blike.filter(id = user.id).exists():
+            post.blike.remove(user)
+            message = "좋아요 취소"
+        else:
+            post.blike.add(user)
+            message = "좋아요"
+        
+        context={'like_count' : post.blike.count(), "message": message}
+        
+        return HttpResponse(json.dumps(context), content_type='application/json')
+
+
+
 def follow(request):
     if request.is_ajax():
+        print("기능")
         profile_id = request.GET['profile_id']
         p_user = Profile.objects.get(id=profile_id) #프로필주인
         q_user = Profile.objects.get(id=request.user.id) #나
@@ -153,10 +194,26 @@ def create_comment(request, post_id):
         comment.save()
         return redirect('/blogapp/detail/' + str(post_id))
 
+def create_bcomment(request, post_id):
+    if request.method =="POST":
+        comment = Board_Comment()
+        comment.user = request.user
+        comment.post = Board.objects.get(id=post_id)
+        comment.content = request.POST['comment']
+        comment.created_at = timezone.datetime.now()
+        comment.save()
+        return redirect('/blogapp/board_detail/' + str(post_id))
+
+
 def delete_comment(request, post_id, comment_id):
     d_comment = Comment.objects.get(id=comment_id)
     d_comment.delete()
     return redirect('/blogapp/detail/' + str(post_id))
+
+def delete_bcomment(request, post_id, comment_id):
+    d_comment = Board_Comment.objects.get(id=comment_id)
+    d_comment.delete()
+    return redirect('/blogapp/board_detail/' + str(post_id))
 
 def profile(request, user):
     user =User.objects.get(username=user)

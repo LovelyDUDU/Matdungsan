@@ -1,78 +1,64 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/create_style.css' %}">
+{% endblock css %}
+
 {% block contents %}
-<div style="margin-top: 120px;">
-    <div class="class_map">
-        <div class="main_container"></div>
-        <div class="main-map">
-            <div id="map" style="width:500px;height:500px;"></div>
-            <!-- http://map.daum.net/?sName=서울시청&eName=서울고속터미널 -->
-            <script type="text/javascript"
-                src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3dfad8c8cf0702820c5111f7c4c05eb6&libraries=services"></script>
+<div style="margin-top: 120px;"></div>
+<main>
+    <div class="posting-box">
+
+        <div class="image-upload">
+            <div class="class_map">
+                <div class="main_container"></div>
+                <div class="main-map">
+                    <div id="map" style="width:380px;height:340px;"></div>
+                    <!-- http://map.daum.net/?sName=서울시청&eName=서울고속터미널 -->
+                    <script type="text/javascript"
+                        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3dfad8c8cf0702820c5111f7c4c05eb6&libraries=services"></script>
+                </div>
+            </div>
+            <!-- 여기에 지도 api 올려주세요 -->
+            <!-- <img src="./assets/image.jpg" alt="upload image" /> -->
         </div>
+
+        <div class="box-detail">
+            <p>{{request.user.profile.nickname}} 님의</p>
+            <p><span id="time-result"></span> 산행</p>
+            <form action="{% url 'create' %}" method="POST" enctype="multipart/form-data">
+                {%csrf_token%}
+                <input class="text-box" placeholder="장소:어디를 정복하셨나요?" name="title" id="title" />
+                <select name="rating" class="text-box">
+                    <option value="5" selected="selected">★★★★★</option>
+                    <option value="4">★★★★</option>
+                    <option value="3">★★★</option>
+                    <option value="2">★★</option>
+                    <option value="1">★</option>
+                </select>
+                <input class="text-box" placeholder="한줄평:간단히 말해주세요!:)" name="content" id="content" />
+                <input class="hashtag-box" placeholder="#해쉬태그 입력" name="tags" id="tags" />
+                <input type="hidden" name="latitude" id="lat"><br>
+                <input type="hidden" name="longtitude" id="long"><br>
+                <div class="button">
+                    <input type="file" class="upload" name="image" id="image">
+                    <button type="submit" class="posting" id="posting">올리기</button>
+                </div>
+            </form>
+
+        </div>
+
     </div>
-    <div class="class_create">
-        <form action="{% url 'create' %}" method="POST" enctype="multipart/form-data">
-            {%csrf_token%}
-            제목 : <input type="text" name="title" id="title">
-            <br>
-            평점 :
-            <select name="rating">
-                <option value="5" selected="selected">★★★★★</option>
-                <option value="4">★★★★</option>
-                <option value="3">★★★</option>
-                <option value="2">★★</option>
-                <option value="1">★</option>
-            </select>
-            <br>
-            한줄평 : <textarea cols=20 rows=1 name="content" id="content"></textarea>
-            <br>
-            이미지 : <input type="file" name="image" id="image"><br>
-            태그 : <input type="text" name="tags" id="tags"><br>
-            위도 : <input type="text" name="latitude" id="lat" readonly><br>
-            경도 : <input type="text" name="longtitude" id="long" readonly><br>
-            <input type="submit" value="등록하기" id="posting">
-        </form>
-    </div>
-</div>
-<hr>
 
-<div id="post_lat" style="display : none">
-    {% for blog in blogs.all %}
-    {{blog.latitude}},
-    {% endfor %}
-</div>
+</main>
 
-<div id="post_lng" style="display : none">
-    {% for blog in blogs.all %}
-    {{blog.longtitude}},
-    {% endfor %}
-</div>
-
-<div id="post_title" style="display : none">
-    {% for blog in blogs.all %}
-    {{blog.title}},
-    {% endfor %}
-</div>
-
-<div id="post_rating" style="display : none">
-    {% for blog in blogs.all %}
-    {{blog.rating}},
-    {% endfor %}
-</div>
-
-<div id="post_content" style="display : none">
-    {% for blog in blogs.all %}
-    {{blog.content}},
-    {% endfor %}
-</div>
-
-<div id="post_image" style="display : none">
-    {% for blog in blogs.all %}
-    {{blog.image.url}},
-    {% endfor %}
-</div>
 
 <script>
+    var d = new Date();
+    var currentDate = (d.getMonth() + 1) + "월 " + d.getDate() + "일";
+    var result = document.getElementById("time-result");
+    result.innerHTML = currentDate;
+
     $("#posting").click(function () {
         var file = $("#image").val();
         if ($("#title").val().length <= 0) {
@@ -118,66 +104,13 @@
     });
 
 
-    var list_lat = document.getElementById("post_lat").innerText.split(',');
-    var list_lng = document.getElementById("post_lng").innerText.split(',');
-    var list_title = document.getElementById("post_title").innerText.split(',');
-    var list_content = document.getElementById("post_content").innerText.split(',');
-    var list_rating = document.getElementById("post_rating").innerText.split(',');
-    var list_image = document.getElementById("post_image").innerText.split(',');
-
-    var postPosition = [];
-    for (var idx = 0; idx < list_lat.length; idx++) {
-        var data_lat = list_lat[idx];
-        var data_lng = list_lng[idx];
-        var data_title = list_title[idx];
-        var data_content = list_content[idx];
-        var data_rating = list_rating[idx];
-        var data_image = list_image[idx];
-        addMarker(new kakao.maps.LatLng(data_lat, data_lng), data_title, data_content, data_rating, data_image);
-
-    }
 
     function addMarker(position, d_title, d_content, d_rating, d_image) {
         var marker = new kakao.maps.Marker({
             map: map,
             position: position
         });
-        var detail;
-
-
-
-        var content = '<div class="wrap">' +
-            '       <div class="info">' +
-            '           <div class="title">' +
-            d_title +
-            '           </div>' +
-            '           <div class="body">' +
-            '               <div class="img">' +
-            '                   <img src="' + d_image + '" width="73" height="70">' +
-            '               </div>' +
-            '           <div class="desc">' +
-            '               <div class="">평점' + d_rating + '</div>' +
-            '               <div class="">위치' + position + '</div>' +
-            '               <div class="">한줄평' + d_content + '</div>' +
-            '           </div>' +
-            '       </div>' +
-            '   </div>' +
-            '</div>';
-        var overlay = new kakao.maps.CustomOverlay({
-            content: content,
-            map: map,
-            position: marker.getPosition()
-        });
-
-        overlay.setMap(null);
-
-        kakao.maps.event.addListener(marker, 'mouseover', function () {
-            overlay.setMap(map)
-        });
-
-        kakao.maps.event.addListener(marker, 'mouseout', function () {
-            overlay.setMap(null)
-        });
+        
     }
 </script>
 {% endblock %}
